@@ -1,0 +1,75 @@
+#include <iostream>
+#include<bits/stdc++.h>
+using namespace std;
+class edge{//an object which can carry 3 variables together
+    public :
+    int source;
+    int desti;
+    int weight;
+};
+
+bool compare(edge e1, edge e2)
+{
+    return e1.weight < e2.weight;
+}
+int findParent(int v,int* parent)
+{
+    if(parent[v]==v)
+        return v;
+    return findParent(parent[v],parent);
+}
+void kruskals(edge* array, int v, int e)
+{
+    //now sort the input array on basis of weight in ascending order
+    sort(array,array+e,compare);//we use compare function to ask sort function to sort according to weight
+    
+    //we need to have a parent array to check for correct edges
+    int* parent = new int[v];
+    for(int i=0;i<v;i++)
+        parent[i] = i;//initially each vetex is parent of itself
+    
+    //now we have to choose right edges and add them in ans
+    //so we make out output array
+    edge* output = new edge[v-1];
+    int count =0;//total edges till now
+    int i=0;
+    while(count != v-1)
+    {
+        edge currentedge = array[i];
+        //now we need to check that if this current edge can be added to MST or not
+        int sourceparent = findParent(currentedge.source,parent);
+        int destiparent = findParent(currentedge.desti,parent);
+        
+        if(sourceparent != destiparent)//means this can be added
+        {
+            output[count] = currentedge;
+            count++;
+            parent[sourceparent] = destiparent;//parent need to be changed
+        }
+        i++;
+    }
+    for(int i=0;i<v-1;i++)
+    {
+        if(output[i].source<output[i].desti)
+            cout<<output[i].source<<" "<<output[i].desti<<" "<<output[i].weight<<endl;
+        else
+            cout<<output[i].desti<<" "<<output[i].source<<" "<<output[i].weight<<endl;
+    }
+}
+int main() {
+    int v,e;
+    cin>>v>>e;
+    
+    edge* array = new edge[e];//an array which have object "edge" on its every ith block
+    int s,d,w;
+    //make an array to take input 
+    for(int i=0;i<e;i++)
+    {
+        cin>>s>>d>>w;
+        array[i].source = s;
+        array[i].desti = d;
+        array[i].weight = w;
+    }
+    
+    kruskals(array,v,e);
+}
